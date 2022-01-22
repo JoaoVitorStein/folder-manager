@@ -1,0 +1,32 @@
+version: "3.7"
+
+volumes:
+  database_data:
+    driver: local
+
+services:
+  folder-manager:
+    build:
+      context: ./
+    image: "folder-manager"
+    container_name: folder-manager
+    environment:
+      DB_CONNECTION_STRING: postgres://postgres:s3cr3tp4ssw0rd@folder-manager-db:5432/dev?sslmode=disable
+    ports:
+      - "8080:8080"
+    depends_on:
+      - folder-manager-db
+
+
+  folder-manager-db:
+    image: postgres:11.9-alpine
+    container_name: folder-manager-db
+    restart: always
+    environment:
+      POSTGRES_DB: dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: s3cr3tp4ssw0rd
+    ports:
+      - "5432:5432"
+    volumes:
+      - database_data:/var/lib/postgresql/data
